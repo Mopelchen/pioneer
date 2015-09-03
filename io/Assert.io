@@ -17,7 +17,23 @@
 Assert := Object clone
 
 Assert areEqual := method(lhObj, rhObj, 
-	if(lhObj type != rhObj type, (Exception raise("Failed!"))))
+	(
+		if(lhObj type != rhObj type, (Exception raise("Not of same type!")))
+		if(lhObj isNil, return nil)
+		if(lhObj slotNames != rhObj slotNames, (Exception raise("Different list of slotNames")))
+		lhObj slotNames foreach(s, 
+			if(lhObj getSlot(s) != rhObj getSlot(s), (Exception raise("Slot {#s} differs!")))
+		)
+	)
+)
+
+Assert areNotEqual := method(lhObj, rhObj,
+	(
+		e := try(areEqual(lhObj, rhObj)) 
+		e catch(Exception, return nil)
+		if(e isNil, Exception raise("Objects are equal!"))
+	)	
+)
 
 Assert isTrue := method(boolExpr,
 	(
@@ -34,7 +50,9 @@ Assert isFalse := method(boolExpr,
 )
 
 Assert isNull := method(obj,
-	if(obj isNil == false, (Exception raise("obj is not nil!"))))
+	if(obj isNil == false, (Exception raise("obj is not nil!")))
+)
 
 Assert isNotNull := method(obj,
-	if(obj isNil, (Exception raise("obj is nil!"))))
+	if(obj isNil, (Exception raise("obj is nil!")))
+)
